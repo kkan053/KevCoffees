@@ -116,7 +116,6 @@
     background: #2a7de1; border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4);
   }
 
-  /* Phone: map on top, panel below */
   @media (max-width: 720px) {
     main { flex-direction: column; }
     #map { flex: 0 0 42vh; }
@@ -166,8 +165,7 @@ Rigorously peer-reviewed by the LOD team. Our methodology: we drank a lot of cof
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (() => {
-  // ---- Starting point: every walk time is measured from here ----
-  // To change it: right-click the spot in Google Maps, copy the numbers, paste below.
+
   const START = { name: '139 Quay Street', lat: -36.84305, lng: 174.76495 };
 
   const WALK_M_PER_MIN = 5000 / 60; // average walking pace, 5 km/h
@@ -272,7 +270,7 @@ Rigorously peer-reviewed by the LOD team. Our methodology: we drank a lot of cof
   function pick() {
     const pool = places.filter(inBudget);
     if (!pool.length) { refresh(); return; }
-    // Avoid picking the same place twice in a row (when there's a choice)
+
     const candidates = pool.length > 1 ? pool.filter(p => p.id !== lastPickId) : pool;
     showPick(candidates[Math.floor(Math.random() * candidates.length)]);
     pickBtn.textContent = 'Pick again';
@@ -281,7 +279,6 @@ Rigorously peer-reviewed by the LOD team. Our methodology: we drank a lot of cof
   pickBtn.addEventListener('click', pick);
   budgetSel.addEventListener('change', refresh);
 
-  // Cache-bust so edits to places.json show up straight after GitHub redeploys
   fetch('places.json?v=' + Date.now())
     .then(r => { if (!r.ok) throw new Error(`Couldn’t load places.json (HTTP ${r.status}).`); return r.text(); })
     .then(txt => {
