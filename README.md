@@ -59,10 +59,10 @@ version, and copy its contents back in.
 
 ## How "Pick for me" works
 
-- **How long do you have? 5 / 10 / 15 min:** asks for your phone's location
-  and picks only from cafés within that one-way walking time.
-- **All day:** picks at random from every café, no location needed.
-- Walk times assume 5 km/h, plus 30% because streets aren't straight lines.
+- **Anywhere in the list:** picks at random from every café.
+- **≤ N min walk from me:** asks for your phone's location and picks only
+  from cafés within that straight-line walking distance. Real routes are a bit
+  longer, so treat it as a rough guide.
 - It never picks the same place twice in a row.
 
 Opening hours aren't tracked on purpose, because they go out of date fast.
@@ -70,6 +70,5 @@ Put stable facts like "weekdays only" in `notes`.
 
 ## Map data
 
-The map uses OpenStreetMap data with CARTO's light map style. It's free to use,
-with no API key or billing. Fine for a small group, but it isn't meant for
-heavy traffic.
+The map is © OpenStreetMap contributors. It's free to use, with no API key or
+billing. Fine for a small group, but it isn't meant for heavy traffic.
