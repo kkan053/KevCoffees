@@ -3,171 +3,214 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>CBD Coffee Roulette</title>
-<meta name="theme-color" content="#2b1d14">
+<title>CBD Coffee</title>
+<meta name="theme-color" content="#0c5394">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Inter+Tight:wght@800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
   :root {
-    --bean: #2b1d14;
-    --crema: #c8894a;
-    --milk: #f7f1ea;
-    --ink: #1d1712;
-    --muted: #6f6258;
-    --line: #e4d9cc;
+    --navy: #0c5394;
+    --navy-dark: #083d6e;
+    --paper: #faf8f4;
+    --ink: #161616;
+    --muted: #5d6670;
+    --line: #d9dde2;
+    --pale: #c9dcef;
+    --footer-h: 64px;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 17px;
+    line-height: 1.5;
     color: var(--ink);
-    background: var(--milk);
-    display: flex;
-    flex-direction: column;
+    background: var(--paper);
+    padding-bottom: calc(var(--footer-h) + env(safe-area-inset-bottom));
   }
-  header {
-    background: var(--bean);
-    color: var(--milk);
-    padding: 12px 16px;
-    padding-top: max(12px, env(safe-area-inset-top));
-  }
-  header h1 { margin: 0; font-size: 1.15rem; letter-spacing: .02em; }
-  header p { margin: 2px 0 0; font-size: .8rem; opacity: .75; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  .display { font-family: "Inter Tight", Inter, system-ui, sans-serif; font-weight: 800; letter-spacing: -.02em; color: var(--navy); }
+  .eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  button { font: inherit; }
 
-  main { flex: 1; display: flex; min-height: 0; }
-  #map { flex: 1; min-height: 0; }
+  /* ---------- Hero ---------- */
+  .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 420px; }
+  .hero-text { padding: 56px 40px 48px max(28px, calc((100vw - 1120px) / 2 + 28px)); align-self: center; }
+  .hero h1 { margin: 0 0 22px; font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1.08; font-weight: 300; letter-spacing: -.01em; }
+  .hero h1 b { font-family: "Inter Tight", Inter, sans-serif; font-weight: 800; color: var(--navy); }
+  .about-label { color: var(--navy); margin-bottom: 6px; }
+  .about { margin: 0; max-width: 34em; }
+  #map { min-height: 420px; height: 100%; background: #e8e4dc; }
 
-  aside {
-    width: 340px;
-    border-left: 1px solid var(--line);
-    display: flex;
-    flex-direction: column;
-    background: #fff;
-    min-height: 0;
+  /* ---------- Time band ---------- */
+  .band { background: var(--navy); color: #fff; }
+  .time-band { padding: 30px 0 34px; }
+  .time-band .eyebrow { opacity: .9; margin-bottom: 14px; }
+  .times { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .time-opt {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 12px 14px; border-radius: 8px;
+    background: transparent; color: #fff;
+    border: 2px solid rgba(255,255,255,.18);
+    cursor: pointer; text-align: left;
   }
+  .time-opt:hover { border-color: rgba(255,255,255,.5); }
+  .time-opt[aria-pressed="true"] { background: #fff; color: var(--navy); border-color: #fff; }
+  .time-opt .num { font-size: 2.6rem; font-weight: 300; line-height: 1; color: var(--pale); }
+  .time-opt[aria-pressed="true"] .num { color: var(--navy); }
+  .time-opt .lbl { font-weight: 700; font-size: .95rem; line-height: 1.2; }
+  .band-note { margin-top: 14px; font-size: .85rem; opacity: .85; min-height: 1.3em; }
 
-  .controls { padding: 14px 16px; border-bottom: 1px solid var(--line); }
-  .pick-btn {
-    width: 100%;
-    font: inherit;
-    font-weight: 700;
-    font-size: 1.05rem;
-    padding: 14px;
-    border: 0;
-    border-radius: 12px;
-    background: var(--crema);
-    color: var(--bean);
-    cursor: pointer;
-  }
-  .pick-btn:active { transform: scale(.98); }
-  .pick-btn:disabled { opacity: .5; cursor: default; }
-  .near {
-    display: flex; align-items: center; gap: 8px;
-    margin-top: 10px; font-size: .85rem; color: var(--muted);
-  }
-  .near select { font: inherit; padding: 4px 6px; border-radius: 6px; border: 1px solid var(--line); }
+  /* ---------- Sections ---------- */
+  section.block { padding: 40px 0 8px; }
+  section.block h2 { margin: 0 0 8px; font-size: clamp(1.8rem, 3.4vw, 2.4rem); line-height: 1.1; }
+  section.block .lead { margin: 0 0 20px; }
 
-  .result {
-    margin-top: 12px; padding: 12px; border-radius: 10px;
-    background: var(--milk); display: none;
+  /* Result band (like the "See another" band) */
+  .result-band { padding: 30px 0 26px; text-align: center; }
+  .result-band .go { font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 400; margin: 0; }
+  .result-band .go strong { font-weight: 700; }
+  .result-band .meta { margin: 6px 0 0; opacity: .85; font-size: .95rem; }
+  .result-band .notes { margin: 8px auto 0; max-width: 40em; font-size: .95rem; }
+  .result-links { margin-top: 14px; display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+  .link-btn {
+    background: none; border: 0; padding: 0; color: #fff; cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px; font-size: 1.05rem;
   }
-  .result.show { display: block; }
-  .result .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
-  .result h2 { margin: 2px 0 4px; font-size: 1.2rem; }
-  .result .addr { font-size: .85rem; color: var(--muted); }
-  .result .notes { font-size: .85rem; margin-top: 6px; }
-  .result a { display: inline-block; margin-top: 8px; color: var(--bean); font-weight: 600; }
+  .result-band a.link-btn { display: inline-block; }
+  .placeholder { opacity: .85; font-size: 1.1rem; margin: 0; }
 
-  .msg { font-size: .85rem; color: #8a3b12; margin-top: 8px; }
-
-  ul#list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
-  ul#list li {
-    padding: 10px 16px; border-bottom: 1px solid var(--line); cursor: pointer;
+  /* List */
+  .list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .list li {
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: center;
+    padding: 14px 4px; border-bottom: 1px solid var(--line); cursor: pointer;
   }
-  ul#list li:hover, ul#list li.active { background: var(--milk); }
-  ul#list .name { font-weight: 600; }
-  ul#list .meta { font-size: .8rem; color: var(--muted); }
+  .list li:hover, .list li.active { background: #fff; }
+  .list li.dim { opacity: .4; }
+  .list .name { font-weight: 700; }
+  .list .addr { font-size: .9rem; color: var(--muted); grid-column: 1; }
+  .list .walk { grid-row: 1 / span 2; grid-column: 2; text-align: right; font-weight: 700; color: var(--navy); white-space: nowrap; }
+  .list .walk small { display: block; font-weight: 400; color: var(--muted); font-size: .75rem; }
+  .fine { font-size: .85rem; color: var(--muted); margin: 14px 0 32px; }
+  .inline-link { color: var(--navy); font-weight: 600; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 
-  .error-box {
-    margin: 16px; padding: 14px; border-radius: 10px;
-    background: #fdecea; color: #7a1d12; font-size: .9rem; line-height: 1.4;
-  }
+  .error-box { padding: 16px; border-radius: 8px; background: #fdecea; color: #7a1d12; }
   .error-box code { background: #fff; padding: 1px 4px; border-radius: 4px; }
 
-  .marker-pin {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--bean); border: 3px solid #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,.4);
+  /* ---------- Footer bar ---------- */
+  .footer {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000;
+    background: var(--paper); border-top: 1px solid var(--line);
+    padding-bottom: env(safe-area-inset-bottom);
   }
-  .marker-pin.picked { background: var(--crema); width: 26px; height: 26px; }
-  .me-pin {
-    width: 14px; height: 14px; border-radius: 50%;
-    background: #2a7de1; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(42,125,225,.25);
+  .footer .wrap { height: var(--footer-h); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .crumb { font-size: .95rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .crumb b { color: var(--ink); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--navy); color: #fff; border: 0; border-radius: 6px;
+    padding: 11px 22px; font-weight: 700; font-size: .95rem; cursor: pointer; white-space: nowrap;
   }
+  .btn:hover { background: var(--navy-dark); }
+  .btn:disabled { opacity: .5; cursor: default; }
 
-  /* Phone: map on top, panel below */
-  @media (max-width: 720px) {
-    main { flex-direction: column; }
-    #map { flex: 0 0 45vh; }
-    aside { width: auto; border-left: 0; border-top: 1px solid var(--line); flex: 1; }
+  /* Markers */
+  .pin { width: 18px; height: 18px; border-radius: 50%; background: var(--navy); border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
+  .pin.picked { width: 28px; height: 28px; background: #fff; border: 7px solid var(--navy); }
+  .pin.dim { opacity: .35; }
+  .me-pin { width: 14px; height: 14px; border-radius: 50%; background: #1f8ae8; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(31,138,232,.25); }
+
+  :focus-visible { outline: 3px solid #f0b429; outline-offset: 2px; }
+
+  @media (max-width: 760px) {
+    body { font-size: 16px; }
+    .wrap { padding: 0 20px; }
+    .hero { grid-template-columns: 1fr; min-height: 0; }
+    .hero-text { padding: 32px 20px 24px; }
+    #map { min-height: 300px; height: 44vh; }
+    .times { grid-template-columns: repeat(2, 1fr); }
+    .time-opt .num { font-size: 2rem; }
+    .crumb span.extra { display: none; }
   }
 </style>
 </head>
 <body>
-<header>
-  <h1>☕ CBD Coffee Roulette</h1>
-  <p>Can't decide? Let the map pick.</p>
-</header>
-<main>
+
+<div class="hero">
+  <div class="hero-text">
+    <h1>Kia ora.<br>Time for a <b>coffee</b>.</h1>
+    <div class="eyebrow about-label">About</div>
+    <p class="about">These are the best coffee places in the CBD, as reviewed by the Coffee Snobs of the LOD team.</p>
+  </div>
   <div id="map" role="region" aria-label="Map of cafés"></div>
-  <aside>
-    <div class="controls">
-      <button class="pick-btn" id="pick" disabled>Pick for me</button>
-      <label class="near">
-        From
-        <select id="radius">
-          <option value="0">anywhere in the list</option>
-          <option value="5">≤ 5 min walk from me</option>
-          <option value="10">≤ 10 min walk from me</option>
-          <option value="15">≤ 15 min walk from me</option>
-        </select>
-      </label>
-      <div class="msg" id="msg" role="status"></div>
-      <div class="result" id="result" aria-live="polite">
-        <div class="label">Go to</div>
-        <h2 id="r-name"></h2>
-        <div class="addr" id="r-addr"></div>
-        <div class="notes" id="r-notes"></div>
-        <a id="r-dir" target="_blank" rel="noopener">Walking directions →</a>
-      </div>
+</div>
+
+<div class="band time-band">
+  <div class="wrap">
+    <div class="eyebrow" id="time-label">How long do you have to walk there?</div>
+    <div class="times" role="group" aria-labelledby="time-label">
+      <button class="time-opt" data-min="5"  aria-pressed="false"><span class="num">5</span><span class="lbl">min</span></button>
+      <button class="time-opt" data-min="10" aria-pressed="false"><span class="num">10</span><span class="lbl">min</span></button>
+      <button class="time-opt" data-min="15" aria-pressed="false"><span class="num">15</span><span class="lbl">min</span></button>
+      <button class="time-opt" data-min="0"  aria-pressed="true"><span class="num">∞</span><span class="lbl">All<br>day</span></button>
     </div>
-    <ul id="list"></ul>
-  </aside>
-</main>
+    <div class="band-note" id="band-note" role="status"></div>
+  </div>
+</div>
+
+<section class="block">
+  <div class="wrap">
+    <h2 class="display">Your pick</h2>
+    <p class="lead">Can't decide? Let the map choose for you.</p>
+  </div>
+</section>
+<div class="band result-band" aria-live="polite">
+  <div class="wrap" id="result">
+    <p class="placeholder">Choose how long you have, then hit <strong>Pick for me</strong>.</p>
+  </div>
+</div>
+
+<section class="block">
+  <div class="wrap">
+    <h2 class="display">All the spots</h2>
+    <p class="lead" id="list-lead"><strong>Walk times are estimates.</strong> <button class="inline-link" id="locate">Use my location</button> to see how far each one is.</p>
+    <ul class="list" id="list"></ul>
+    <p class="fine">Walk times assume an average pace of 5 km/h, plus 30% because streets don't run in straight lines. Allow extra for lifts, crossings and queues.</p>
+  </div>
+</section>
+
+<div class="footer">
+  <div class="wrap">
+    <div class="crumb">CBD Coffee <span class="extra">· <b>LOD Coffee Snobs</b></span></div>
+    <button class="btn" id="pick" disabled>Pick for me <span aria-hidden="true">→</span></button>
+  </div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (() => {
   const CBD_CENTRE = [-36.8475, 174.7665];
-  const WALK_M_PER_MIN = 75; // straight-line; real routes are longer, so this is generous
-
-  const map = L.map('map', { zoomControl: true }).setView(CBD_CENTRE, 16);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
+  const WALK_M_PER_MIN = 5000 / 60;  // average walking pace, 5 km/h
+  const ROUTE_FACTOR = 1.3;          // real routes vs straight line
 
   const $ = id => document.getElementById(id);
-  const pickBtn = $('pick'), radiusSel = $('radius'), msg = $('msg'), list = $('list');
+  const pickBtn = $('pick'), list = $('list'), note = $('band-note'), resultEl = $('result');
+
+  const map = L.map('map', { scrollWheelZoom: false }).setView(CBD_CENTRE, 16);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19, subdomains: 'abcd',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+  }).addTo(map);
 
   let places = [];
   const markers = new Map();
-  let lastPickId = null;
+  let budget = 0;          // minutes; 0 = all day
   let me = null, meMarker = null;
-
-  const icon = picked => L.divIcon({
-    className: '', html: `<div class="marker-pin${picked ? ' picked' : ''}"></div>`,
-    iconSize: picked ? [26, 26] : [18, 18], iconAnchor: picked ? [13, 13] : [9, 9]
-  });
+  let lastPickId = null;
 
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -178,6 +221,14 @@
     const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
     return 2 * R * Math.asin(Math.sqrt(h));
   }
+  const walkMin = p => me ? Math.max(1, Math.round(distanceM(me, p) * ROUTE_FACTOR / WALK_M_PER_MIN)) : null;
+  const inBudget = p => budget === 0 || (me && walkMin(p) <= budget);
+
+  const pinIcon = cls => L.divIcon({
+    className: '', html: `<div class="pin ${cls}"></div>`,
+    iconSize: cls.includes('picked') ? [28, 28] : [18, 18],
+    iconAnchor: cls.includes('picked') ? [14, 14] : [9, 9]
+  });
 
   function validate(data) {
     if (!Array.isArray(data)) throw new Error('places.json must be a list — it should start with [ and end with ].');
@@ -197,88 +248,112 @@
     return data;
   }
 
-  function render() {
-    list.innerHTML = '';
-    places.forEach(p => {
-      const m = L.marker([p.lat, p.lng], { icon: icon(false), title: p.name })
-        .addTo(map)
-        .bindPopup(`<strong>${esc(p.name)}</strong><br>${esc(p.address)}`);
-      m.on('click', () => highlight(p.id));
-      markers.set(p.id, m);
-
-      const li = document.createElement('li');
-      li.dataset.id = p.id;
-      li.innerHTML = `<div class="name">${esc(p.name)}</div><div class="meta">${esc(p.address)}</div>`;
-      li.addEventListener('click', () => { highlight(p.id); map.setView([p.lat, p.lng], 17); m.openPopup(); });
-      list.appendChild(li);
+  function locate() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) return reject(new Error('This browser can’t share your location.'));
+      navigator.geolocation.getCurrentPosition(pos => {
+        me = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        if (meMarker) meMarker.setLatLng([me.lat, me.lng]);
+        else meMarker = L.marker([me.lat, me.lng], {
+          icon: L.divIcon({ className: '', html: '<div class="me-pin"></div>', iconSize: [14, 14], iconAnchor: [7, 7] }),
+          title: 'You are here', keyboard: false
+        }).addTo(map);
+        resolve(me);
+      }, () => reject(new Error('Couldn’t get your location. Allow location access, or choose “All day”.')),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 });
     });
-    const bounds = L.latLngBounds(places.map(p => [p.lat, p.lng]));
-    if (places.length) map.fitBounds(bounds, { padding: [30, 30] });
   }
 
-  function highlight(id) {
-    list.querySelectorAll('li').forEach(li => li.classList.toggle('active', li.dataset.id === id));
+  function renderList() {
+    const sorted = me ? [...places].sort((a, b) => walkMin(a) - walkMin(b)) : places;
+    list.innerHTML = '';
+    sorted.forEach(p => {
+      const li = document.createElement('li');
+      li.dataset.id = p.id;
+      li.tabIndex = 0;
+      if (!inBudget(p)) li.classList.add('dim');
+      if (p.id === lastPickId) li.classList.add('active');
+      const t = walkMin(p);
+      li.innerHTML = `<div class="name">${esc(p.name)}</div>
+        <div class="walk">${t ? `${t} min<small>walk</small>` : ''}</div>
+        <div class="addr">${esc(p.address)}</div>`;
+      const go = () => { map.setView([p.lat, p.lng], 17); markers.get(p.id).openPopup(); document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+      li.addEventListener('click', go);
+      li.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+      list.appendChild(li);
+    });
+    if (me) $('list-lead').innerHTML = '<strong>Walk times are estimates</strong> from where you are now. Closest first.';
+  }
+
+  function renderMarkers() {
+    markers.forEach((m, id) => {
+      const p = places.find(x => x.id === id);
+      m.setIcon(pinIcon(id === lastPickId ? 'picked' : (inBudget(p) ? '' : 'dim')));
+    });
+  }
+
+  function updateNote() {
+    if (budget === 0) { note.textContent = `All ${places.length} spots are in the running.`; return; }
+    if (!me) { note.textContent = ''; return; }
+    const n = places.filter(inBudget).length;
+    note.textContent = n
+      ? `${n} spot${n === 1 ? '' : 's'} within a ${budget}-minute walk.`
+      : `Nothing within a ${budget}-minute walk from here. Try a longer time.`;
+  }
+
+  function refresh() { renderList(); renderMarkers(); updateNote(); }
+
+  async function setBudget(min) {
+    budget = min;
+    document.querySelectorAll('.time-opt').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.min) === min)));
+    if (min > 0 && !me) {
+      note.textContent = 'Finding you…';
+      try { await locate(); }
+      catch (e) { note.textContent = e.message; return; }
+    }
+    refresh();
   }
 
   function showPick(p) {
-    markers.forEach((m, id) => m.setIcon(icon(id === p.id)));
-    highlight(p.id);
-    $('r-name').textContent = p.name;
-    $('r-addr').textContent = p.address || '';
-    const extra = me ? ` · ~${Math.max(1, Math.round(distanceM(me, p) / WALK_M_PER_MIN))} min walk` : '';
-    $('r-notes').textContent = (p.notes || '') + extra;
-    $('r-dir').href = `https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=${p.lat},${p.lng}`;
-    $('result').classList.add('show');
+    lastPickId = p.id;
+    const t = walkMin(p);
+    resultEl.innerHTML = `
+      <p class="go">Go to <strong>${esc(p.name)}</strong>.</p>
+      <p class="meta">${esc(p.address)}${t ? ` · about ${t} min walk` : ''}</p>
+      ${p.notes ? `<p class="notes">${esc(p.notes)}</p>` : ''}
+      <div class="result-links">
+        <a class="link-btn" target="_blank" rel="noopener"
+           href="https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=${p.lat},${p.lng}">Walking directions</a>
+        <button class="link-btn" id="again">See another</button>
+      </div>`;
+    $('again').addEventListener('click', pick);
+    refresh();
     map.flyTo([p.lat, p.lng], 17, { duration: .8 });
     markers.get(p.id).openPopup();
   }
 
-  function getLocation() {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) return reject(new Error('This browser can’t share your location.'));
-      navigator.geolocation.getCurrentPosition(
-        pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => reject(new Error('Couldn’t get your location — allow location access, or choose “anywhere”.')),
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
-      );
-    });
-  }
-
   async function pick() {
-    msg.textContent = '';
-    const mins = Number(radiusSel.value);
-    let pool = places;
-
-    if (mins > 0) {
-      pickBtn.disabled = true; pickBtn.textContent = 'Finding you…';
-      try {
-        me = await getLocation();
-        if (meMarker) meMarker.setLatLng([me.lat, me.lng]);
-        else meMarker = L.marker([me.lat, me.lng], {
-          icon: L.divIcon({ className: '', html: '<div class="me-pin"></div>', iconSize: [14, 14], iconAnchor: [7, 7] }),
-          title: 'You'
-        }).addTo(map);
-        pool = places.filter(p => distanceM(me, p) <= mins * WALK_M_PER_MIN);
-      } catch (e) {
-        msg.textContent = e.message;
-        pickBtn.disabled = false; pickBtn.textContent = 'Pick for me';
-        return;
-      }
-      pickBtn.disabled = false; pickBtn.textContent = 'Pick again';
-      if (!pool.length) { msg.textContent = `Nothing within ${mins} min. Try a wider range.`; return; }
+    if (budget > 0 && !me) {
+      try { await locate(); } catch (e) { note.textContent = e.message; return; }
     }
-
-    // Avoid picking the same place twice in a row (when there's a choice)
+    const pool = places.filter(inBudget);
+    if (!pool.length) {
+      updateNote();
+      resultEl.innerHTML = `<p class="placeholder">Nothing within a ${budget}-minute walk. Try a longer time.</p>`;
+      return;
+    }
     const candidates = pool.length > 1 ? pool.filter(p => p.id !== lastPickId) : pool;
-    const choice = candidates[Math.floor(Math.random() * candidates.length)];
-    lastPickId = choice.id;
-    pickBtn.textContent = 'Pick again';
-    showPick(choice);
+    showPick(candidates[Math.floor(Math.random() * candidates.length)]);
+    resultEl.closest('.band').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
+  document.querySelectorAll('.time-opt').forEach(b =>
+    b.addEventListener('click', () => setBudget(Number(b.dataset.min))));
   pickBtn.addEventListener('click', pick);
+  $('locate').addEventListener('click', async () => {
+    try { await locate(); refresh(); } catch (e) { $('list-lead').textContent = e.message; }
+  });
 
-  // Cache-bust so edits to places.json show up straight after GitHub redeploys
   fetch('places.json?v=' + Date.now())
     .then(r => { if (!r.ok) throw new Error(`Couldn’t load places.json (HTTP ${r.status}).`); return r.text(); })
     .then(txt => {
@@ -286,14 +361,19 @@
       try { data = JSON.parse(txt); }
       catch (e) { throw new Error('places.json has a typo — usually a missing or extra comma, or a missing quote. ' + e.message); }
       places = validate(data);
-      render();
+      places.forEach(p => {
+        const m = L.marker([p.lat, p.lng], { icon: pinIcon(''), title: p.name })
+          .addTo(map).bindPopup(`<strong>${esc(p.name)}</strong><br>${esc(p.address)}`);
+        markers.set(p.id, m);
+      });
+      if (places.length) map.fitBounds(L.latLngBounds(places.map(p => [p.lat, p.lng])), { padding: [36, 36] });
       pickBtn.disabled = places.length === 0;
+      refresh();
     })
     .catch(err => {
-      const local = location.protocol === 'file:';
       const box = document.createElement('div');
       box.className = 'error-box';
-      box.innerHTML = local
+      box.innerHTML = location.protocol === 'file:'
         ? 'Opened as a local file, so the browser blocks loading <code>places.json</code>. Open the GitHub Pages link instead, or run <code>python3 -m http.server</code> in this folder and visit <code>http://localhost:8000</code>.'
         : `<strong>Something’s wrong with the café list.</strong><br>${esc(err.message)}`;
       list.replaceWith(box);

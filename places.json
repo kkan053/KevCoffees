@@ -34,10 +34,10 @@
   {
     "id": "eos",
     "name": "EOS Coffee",
-    "address": "16 Anzac Avenue, Auckland CBD",
-    "lat": -36.84690,
-    "lng": 174.77110,
-    "notes": ""
+    "address": "Unit 17, 21 Customs Street East, Auckland CBD",
+    "lat": -36.84470,
+    "lng": 174.76750,
+    "notes": "Temporarily moved here from Queens Arcade. Owner is a former NZ latte art champion."
   },
   {
     "id": "spectra",
@@ -49,18 +49,50 @@
   },
   {
     "id": "receptionist-safehouse",
-    "name": "Receptionist (Safehouse)",
+    "name": "Receptionist",
     "address": "Unit 7, 59–67 High Street (Little High St), Auckland CBD",
     "lat": -36.84945,
     "lng": 174.76630,
-    "notes": "Sit-down café. Open Saturdays too."
+    "notes": "The Safehouse café. Open Saturdays too."
   },
   {
-    "id": "receptionist-lorne",
-    "name": "Receptionist (Lorne St window)",
-    "address": "32 Lorne Street, Auckland CBD",
-    "lat": -36.85060,
-    "lng": 174.76700,
-    "notes": "The original takeaway window. Weekdays."
+    "id": "maeve",
+    "name": "Maeve Coffee Roasters",
+    "address": "16–22 Anzac Avenue, Auckland CBD",
+    "lat": -36.84680,
+    "lng": 174.77100,
+    "notes": "Roaster with a ground-floor café."
+  },
+  {
+    "id": "rumours",
+    "name": "Rumours Coffee",
+    "address": "19 O'Connell Street, Auckland CBD",
+    "lat": -36.84650,
+    "lng": 174.76800,
+    "notes": "Single-origin specialist. Pour-overs worth a try."
+  },
+  {
+    "id": "bespoke",
+    "name": "BESPOKE",
+    "address": "72 Albert Street, Auckland CBD",
+    "lat": -36.84880,
+    "lng": 174.76270,
+    "notes": "Small coffee specialist between Victoria and Wyndham Streets."
+  },
+  {
+    "id": "kompass",
+    "name": "Kompass Coffee",
+    "address": "2 Kitchener Street, Auckland CBD",
+    "lat": -36.85020,
+    "lng": 174.76780,
+    "notes": "By Albert Park, opposite the Art Gallery. Good matcha too."
+  },
+  {
+    "id": "remedy",
+    "name": "Remedy Coffee",
+    "address": "1 Wellesley Street West, Auckland CBD",
+    "lat": -36.85130,
+    "lng": 174.76380,
+    "notes": "Cosy, books and board games. Opposite the Civic."
   }
 ]
