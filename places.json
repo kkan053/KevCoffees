@@ -5,7 +5,7 @@
     "address": "1 Albert Street, Auckland CBD",
     "lat": -36.84475,
     "lng": 174.76455,
-    "notes": "Tiny espresso window. Weekdays, mornings to early afternoon. Try a cannoli."
+    "notes": "Can take a while."
   },
   {
     "id": "dose",
@@ -13,7 +13,7 @@
     "address": "5 High Street, Auckland CBD",
     "lat": -36.84705,
     "lng": 174.76705,
-    "notes": "Craft-focused coffee bar on High Street."
+    "notes": "Tryhard."
   },
   {
     "id": "stolen-summer",
@@ -21,7 +21,7 @@
     "address": "18B High Street, Auckland CBD",
     "lat": -36.84770,
     "lng": 174.76680,
-    "notes": "Weekdays only. Coffee comes with a mini cookie."
+    "notes": "Cheapest coffee here. Coffee comes with a mini cookie."
   },
   {
     "id": "kokako",
@@ -29,7 +29,7 @@
     "address": "Level 1, Commercial Bay, 1 Queen Street, Auckland CBD",
     "lat": -36.84430,
     "lng": 174.76610,
-    "notes": "Specialty coffee bar upstairs in Commercial Bay. Filter options too."
+    "notes": "It's close."
   },
   {
     "id": "eos",
@@ -37,7 +37,7 @@
     "address": "Unit 17, 21 Customs Street East, Auckland CBD",
     "lat": -36.84470,
     "lng": 174.76750,
-    "notes": "Temporarily moved here from Queens Arcade. Owner is a former NZ latte art champion."
+    "notes": "Expensive but tryhard. The guy is a latte art champion."
   },
   {
     "id": "spectra",
@@ -45,15 +45,15 @@
     "address": "Sky Lobby, Level 7, PwC Tower, 15 Customs Street West, Auckland CBD",
     "lat": -36.84480,
     "lng": 174.76540,
-    "notes": "Weekdays only. Up in the PwC Tower Sky Lobby — take the lifts."
+    "notes": "Inside PwC building."
   },
   {
     "id": "receptionist-safehouse",
     "name": "Receptionist",
-    "address": "Unit 7, 59–67 High Street (Little High St), Auckland CBD",
+    "address": "95 Queen Street, Auckland CBD",
     "lat": -36.84945,
     "lng": 174.76630,
-    "notes": "The Safehouse café. Open Saturdays too."
+    "notes": "Super fast service."
   },
   {
     "id": "maeve",
@@ -69,7 +69,7 @@
     "address": "19 O'Connell Street, Auckland CBD",
     "lat": -36.84650,
     "lng": 174.76800,
-    "notes": "Single-origin specialist. Pour-overs worth a try."
+    "notes": "Tryhard."
   },
   {
     "id": "bespoke",
@@ -93,6 +93,6 @@
     "address": "1 Wellesley Street West, Auckland CBD",
     "lat": -36.85130,
     "lng": 174.76380,
-    "notes": "Cosy, books and board games. Opposite the Civic."
+    "notes": "Recommended by Rhody - haven't tried."
   }
 ]
