@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CBD Coffee Roulette</title>
+<meta name="theme-color" content="#2b1d14">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root {
+    --bean: #2b1d14;
+    --crema: #c8894a;
+    --milk: #f7f1ea;
+    --ink: #1d1712;
+    --muted: #6f6258;
+    --line: #e4d9cc;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--milk);
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: var(--bean);
+    color: var(--milk);
+    padding: 12px 16px;
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+  header h1 { margin: 0; font-size: 1.15rem; letter-spacing: .02em; }
+  header p { margin: 2px 0 0; font-size: .8rem; opacity: .75; }
+
+  main { flex: 1; display: flex; min-height: 0; }
+  #map { flex: 1; min-height: 0; }
+
+  aside {
+    width: 340px;
+    border-left: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    min-height: 0;
+  }
+
+  .controls { padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .pick-btn {
+    width: 100%;
+    font: inherit;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 14px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--crema);
+    color: var(--bean);
+    cursor: pointer;
+  }
+  .pick-btn:active { transform: scale(.98); }
+  .pick-btn:disabled { opacity: .5; cursor: default; }
+  .near {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; font-size: .85rem; color: var(--muted);
+  }
+  .near select { font: inherit; padding: 4px 6px; border-radius: 6px; border: 1px solid var(--line); }
+
+  .result {
+    margin-top: 12px; padding: 12px; border-radius: 10px;
+    background: var(--milk); display: none;
+  }
+  .result.show { display: block; }
+  .result .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .result h2 { margin: 2px 0 4px; font-size: 1.2rem; }
+  .result .addr { font-size: .85rem; color: var(--muted); }
+  .result .notes { font-size: .85rem; margin-top: 6px; }
+  .result a { display: inline-block; margin-top: 8px; color: var(--bean); font-weight: 600; }
+
+  .msg { font-size: .85rem; color: #8a3b12; margin-top: 8px; }
+
+  ul#list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+  ul#list li {
+    padding: 10px 16px; border-bottom: 1px solid var(--line); cursor: pointer;
+  }
+  ul#list li:hover, ul#list li.active { background: var(--milk); }
+  ul#list .name { font-weight: 600; }
+  ul#list .meta { font-size: .8rem; color: var(--muted); }
+
+  .error-box {
+    margin: 16px; padding: 14px; border-radius: 10px;
+    background: #fdecea; color: #7a1d12; font-size: .9rem; line-height: 1.4;
+  }
+  .error-box code { background: #fff; padding: 1px 4px; border-radius: 4px; }
+
+  .marker-pin {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--bean); border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,.4);
+  }
+  .marker-pin.picked { background: var(--crema); width: 26px; height: 26px; }
+  .me-pin {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #2a7de1; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(42,125,225,.25);
+  }
+
+  /* Phone: map on top, panel below */
+  @media (max-width: 720px) {
+    main { flex-direction: column; }
+    #map { flex: 0 0 45vh; }
+    aside { width: auto; border-left: 0; border-top: 1px solid var(--line); flex: 1; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>☕ CBD Coffee Roulette</h1>
+  <p>Can't decide? Let the map pick.</p>
+</header>
+<main>
+  <div id="map" role="region" aria-label="Map of cafés"></div>
+  <aside>
+    <div class="controls">
+      <button class="pick-btn" id="pick" disabled>Pick for me</button>
+      <label class="near">
+        From
+        <select id="radius">
+          <option value="0">anywhere in the list</option>
+          <option value="5">≤ 5 min walk from me</option>
+          <option value="10">≤ 10 min walk from me</option>
+          <option value="15">≤ 15 min walk from me</option>
+        </select>
+      </label>
+      <div class="msg" id="msg" role="status"></div>
+      <div class="result" id="result" aria-live="polite">
+        <div class="label">Go to</div>
+        <h2 id="r-name"></h2>
+        <div class="addr" id="r-addr"></div>
+        <div class="notes" id="r-notes"></div>
+        <a id="r-dir" target="_blank" rel="noopener">Walking directions →</a>
+      </div>
+    </div>
+    <ul id="list"></ul>
+  </aside>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(() => {
+  const CBD_CENTRE = [-36.8475, 174.7665];
+  const WALK_M_PER_MIN = 75; // straight-line; real routes are longer, so this is generous
+
+  const map = L.map('map', { zoomControl: true }).setView(CBD_CENTRE, 16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  const $ = id => document.getElementById(id);
+  const pickBtn = $('pick'), radiusSel = $('radius'), msg = $('msg'), list = $('list');
+
+  let places = [];
+  const markers = new Map();
+  let lastPickId = null;
+  let me = null, meMarker = null;
+
+  const icon = picked => L.divIcon({
+    className: '', html: `<div class="marker-pin${picked ? ' picked' : ''}"></div>`,
+    iconSize: picked ? [26, 26] : [18, 18], iconAnchor: picked ? [13, 13] : [9, 9]
+  });
+
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function distanceM(a, b) {
+    const R = 6371000, rad = x => x * Math.PI / 180;
+    const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+
+  function validate(data) {
+    if (!Array.isArray(data)) throw new Error('places.json must be a list — it should start with [ and end with ].');
+    const ids = new Set();
+    data.forEach((p, i) => {
+      const where = `Entry ${i + 1}${p && p.name ? ` (“${p.name}”)` : ''}`;
+      if (!p || typeof p !== 'object') throw new Error(`${where} is not a { … } block.`);
+      if (!p.name) throw new Error(`${where} is missing "name".`);
+      if (typeof p.lat !== 'number' || typeof p.lng !== 'number')
+        throw new Error(`${where} needs "lat" and "lng" as plain numbers (no quotes).`);
+      if (p.lat > -36.8 || p.lat < -36.9 || p.lng < 174.7 || p.lng > 174.8)
+        throw new Error(`${where} has coordinates outside central Auckland — check lat/lng aren't swapped.`);
+      const id = p.id || p.name;
+      if (ids.has(id)) throw new Error(`${where} has a duplicate id "${id}".`);
+      ids.add(id); p.id = id;
+    });
+    return data;
+  }
+
+  function render() {
+    list.innerHTML = '';
+    places.forEach(p => {
+      const m = L.marker([p.lat, p.lng], { icon: icon(false), title: p.name })
+        .addTo(map)
+        .bindPopup(`<strong>${esc(p.name)}</strong><br>${esc(p.address)}`);
+      m.on('click', () => highlight(p.id));
+      markers.set(p.id, m);
+
+      const li = document.createElement('li');
+      li.dataset.id = p.id;
+      li.innerHTML = `<div class="name">${esc(p.name)}</div><div class="meta">${esc(p.address)}</div>`;
+      li.addEventListener('click', () => { highlight(p.id); map.setView([p.lat, p.lng], 17); m.openPopup(); });
+      list.appendChild(li);
+    });
+    const bounds = L.latLngBounds(places.map(p => [p.lat, p.lng]));
+    if (places.length) map.fitBounds(bounds, { padding: [30, 30] });
+  }
+
+  function highlight(id) {
+    list.querySelectorAll('li').forEach(li => li.classList.toggle('active', li.dataset.id === id));
+  }
+
+  function showPick(p) {
+    markers.forEach((m, id) => m.setIcon(icon(id === p.id)));
+    highlight(p.id);
+    $('r-name').textContent = p.name;
+    $('r-addr').textContent = p.address || '';
+    const extra = me ? ` · ~${Math.max(1, Math.round(distanceM(me, p) / WALK_M_PER_MIN))} min walk` : '';
+    $('r-notes').textContent = (p.notes || '') + extra;
+    $('r-dir').href = `https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=${p.lat},${p.lng}`;
+    $('result').classList.add('show');
+    map.flyTo([p.lat, p.lng], 17, { duration: .8 });
+    markers.get(p.id).openPopup();
+  }
+
+  function getLocation() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) return reject(new Error('This browser can’t share your location.'));
+      navigator.geolocation.getCurrentPosition(
+        pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => reject(new Error('Couldn’t get your location — allow location access, or choose “anywhere”.')),
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+      );
+    });
+  }
+
+  async function pick() {
+    msg.textContent = '';
+    const mins = Number(radiusSel.value);
+    let pool = places;
+
+    if (mins > 0) {
+      pickBtn.disabled = true; pickBtn.textContent = 'Finding you…';
+      try {
+        me = await getLocation();
+        if (meMarker) meMarker.setLatLng([me.lat, me.lng]);
+        else meMarker = L.marker([me.lat, me.lng], {
+          icon: L.divIcon({ className: '', html: '<div class="me-pin"></div>', iconSize: [14, 14], iconAnchor: [7, 7] }),
+          title: 'You'
+        }).addTo(map);
+        pool = places.filter(p => distanceM(me, p) <= mins * WALK_M_PER_MIN);
+      } catch (e) {
+        msg.textContent = e.message;
+        pickBtn.disabled = false; pickBtn.textContent = 'Pick for me';
+        return;
+      }
+      pickBtn.disabled = false; pickBtn.textContent = 'Pick again';
+      if (!pool.length) { msg.textContent = `Nothing within ${mins} min. Try a wider range.`; return; }
+    }
+
+    // Avoid picking the same place twice in a row (when there's a choice)
+    const candidates = pool.length > 1 ? pool.filter(p => p.id !== lastPickId) : pool;
+    const choice = candidates[Math.floor(Math.random() * candidates.length)];
+    lastPickId = choice.id;
+    pickBtn.textContent = 'Pick again';
+    showPick(choice);
+  }
+
+  pickBtn.addEventListener('click', pick);
+
+  // Cache-bust so edits to places.json show up straight after GitHub redeploys
+  fetch('places.json?v=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error(`Couldn’t load places.json (HTTP ${r.status}).`); return r.text(); })
+    .then(txt => {
+      let data;
+      try { data = JSON.parse(txt); }
+      catch (e) { throw new Error('places.json has a typo — usually a missing or extra comma, or a missing quote. ' + e.message); }
+      places = validate(data);
+      render();
+      pickBtn.disabled = places.length === 0;
+    })
+    .catch(err => {
+      const local = location.protocol === 'file:';
+      const box = document.createElement('div');
+      box.className = 'error-box';
+      box.innerHTML = local
+        ? 'Opened as a local file, so the browser blocks loading <code>places.json</code>. Open the GitHub Pages link instead, or run <code>python3 -m http.server</code> in this folder and visit <code>http://localhost:8000</code>.'
+        : `<strong>Something’s wrong with the café list.</strong><br>${esc(err.message)}`;
+      list.replaceWith(box);
+    });
+})();
+</script>
+</body>
+</html>

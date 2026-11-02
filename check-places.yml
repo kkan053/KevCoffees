@@ -1,0 +1,35 @@
+name: Check places.json
+
+on:
+  push:
+    paths: ["places.json"]
+  pull_request:
+    paths: ["places.json"]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate places.json
+        run: |
+          node -e '
+            const fs = require("fs");
+            let data;
+            try { data = JSON.parse(fs.readFileSync("places.json", "utf8")); }
+            catch (e) { console.error("places.json is not valid JSON: " + e.message); process.exit(1); }
+            if (!Array.isArray(data)) { console.error("places.json must be a list [ ... ]"); process.exit(1); }
+            const ids = new Set(); let bad = 0;
+            data.forEach((p, i) => {
+              const tag = `Entry ${i + 1} (${p && p.name || "no name"})`;
+              const fail = m => { console.error(`${tag}: ${m}`); bad++; };
+              if (!p.name) fail("missing name");
+              if (typeof p.lat !== "number" || typeof p.lng !== "number") fail("lat/lng must be numbers without quotes");
+              else if (p.lat > -36.8 || p.lat < -36.9 || p.lng < 174.7 || p.lng > 174.8) fail("coordinates are outside central Auckland (swapped?)");
+              const id = p.id || p.name;
+              if (ids.has(id)) fail(`duplicate id "${id}"`);
+              ids.add(id);
+            });
+            if (bad) process.exit(1);
+            console.log(`OK: ${data.length} places`);
+          '

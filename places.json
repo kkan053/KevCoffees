@@ -1,0 +1,66 @@
+[
+  {
+    "id": "zibetto",
+    "name": "Zibetto",
+    "address": "1 Albert Street, Auckland CBD",
+    "lat": -36.84475,
+    "lng": 174.76455,
+    "notes": "Tiny espresso window. Weekdays, mornings to early afternoon. Try a cannoli."
+  },
+  {
+    "id": "dose",
+    "name": "D.O.S.E",
+    "address": "5 High Street, Auckland CBD",
+    "lat": -36.84705,
+    "lng": 174.76705,
+    "notes": "Craft-focused coffee bar on High Street."
+  },
+  {
+    "id": "stolen-summer",
+    "name": "Stolen Summer",
+    "address": "18B High Street, Auckland CBD",
+    "lat": -36.84770,
+    "lng": 174.76680,
+    "notes": "Weekdays only. Coffee comes with a mini cookie."
+  },
+  {
+    "id": "kokako",
+    "name": "Kōkako",
+    "address": "Level 1, Commercial Bay, 1 Queen Street, Auckland CBD",
+    "lat": -36.84430,
+    "lng": 174.76610,
+    "notes": "Specialty coffee bar upstairs in Commercial Bay. Filter options too."
+  },
+  {
+    "id": "eos",
+    "name": "EOS Coffee",
+    "address": "16 Anzac Avenue, Auckland CBD",
+    "lat": -36.84690,
+    "lng": 174.77110,
+    "notes": ""
+  },
+  {
+    "id": "spectra",
+    "name": "Spectra Cafe",
+    "address": "Sky Lobby, Level 7, PwC Tower, 15 Customs Street West, Auckland CBD",
+    "lat": -36.84480,
+    "lng": 174.76540,
+    "notes": "Weekdays only. Up in the PwC Tower Sky Lobby — take the lifts."
+  },
+  {
+    "id": "receptionist-safehouse",
+    "name": "Receptionist (Safehouse)",
+    "address": "Unit 7, 59–67 High Street (Little High St), Auckland CBD",
+    "lat": -36.84945,
+    "lng": 174.76630,
+    "notes": "Sit-down café. Open Saturdays too."
+  },
+  {
+    "id": "receptionist-lorne",
+    "name": "Receptionist (Lorne St window)",
+    "address": "32 Lorne Street, Auckland CBD",
+    "lat": -36.85060,
+    "lng": 174.76700,
+    "notes": "The original takeaway window. Weekdays."
+  }
+]
